@@ -1,5 +1,5 @@
 {
-  "name": "notarypy-badge",
+  "name": "notarypy",
   "version": "1.0.0",
   "description": "Badge generator for Python package attestations",
   "main": "src/index.js",
