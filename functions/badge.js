@@ -1,73 +1,79 @@
 const axios = require('axios');
 
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
   try {
-    // Parse path parameters
-    const path = event.path.replace('/badge/', '');
-    const [packageName, version, filename] = path.split('/');
-    
+    console.log('Received path:', event.path);
+    console.log('Received query:', event.queryStringParameters);
+
+    let packageName, version, filename;
+
+    if (event.queryStringParameters?.package) {
+      // Fallback for query param input
+      packageName = event.queryStringParameters.package;
+      version = event.queryStringParameters.version;
+      filename = event.queryStringParameters.filename;
+    } else {
+      // Existing path-based logic
+      let pathSegments;
+      if (event.path.includes('/.netlify/functions/badge/')) {
+        pathSegments = event.path.split('/.netlify/functions/badge/')[1];
+      } else if (event.path.includes('/badge/')) {
+        pathSegments = event.path.split('/badge/')[1];
+      } else {
+        pathSegments = event.path.replace('/functions/badge/', '');
+      }
+
+      const segments = pathSegments?.split('/');
+      [packageName, version, filename] = segments || [];
+    }
+
     if (!packageName || !version || !filename) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: 'Missing parameters. Format: /badge/[package]/[version]/[filename]' })
+        body: JSON.stringify({ error: 'Missing parameters: package, version, filename' })
       };
     }
 
-    // Check if the package has attestations
+    // === Everything below here stays the same ===
+
     const attestationUrl = `https://pypi.org/integrity/${packageName}/${version}/${filename}/provenance`;
-    
     let hasAttestation = false;
     let publisherInfo = null;
-    
+
     try {
       const response = await axios.get(attestationUrl);
       if (response.status === 200) {
         hasAttestation = true;
-        
-        // Try to extract publisher info if available
-        if (response.data && 
-            response.data.attestation_bundles && 
-            response.data.attestation_bundles.length > 0) {
-          const publisher = response.data.attestation_bundles[0].publisher;
-          if (publisher && publisher.kind === 'github') {
-            const repo = publisher.claims?.repository?.split('/').pop() || '';
-            const workflow = publisher.claims?.workflow?.replace('.yml', '') || '';
-            publisherInfo = `${repo}_${workflow}`;
-          }
+        const publisher = response.data?.attestation_bundles?.[0]?.publisher;
+        if (publisher?.kind === 'github') {
+          const repo = publisher.claims?.repository?.split('/').pop() || '';
+          const workflow = publisher.claims?.workflow?.replace('.yml', '') || '';
+          publisherInfo = `${repo}_${workflow}`;
         }
       }
     } catch (error) {
-      // Assume no attestation if there's an error
-      hasAttestation = false;
+      console.log('Attestation fetch error:', error.message);
     }
-    
-    // Build the shield.io URL
-    let shieldUrl;
-    if (hasAttestation) {
-      const message = publisherInfo ? `Verified_by_${publisherInfo}` : 'Verified';
-      shieldUrl = `https://img.shields.io/badge/PyPI_Attestation-${message}-success.svg`;
-    } else {
-      shieldUrl = `https://img.shields.io/badge/PyPI_Attestation-None-red.svg`;
+
+    let shieldUrl = hasAttestation
+      ? `https://img.shields.io/badge/PyPI_Attestation-${publisherInfo ? `Verified_by_${publisherInfo}` : 'Verified'}-success.svg`
+      : `https://img.shields.io/badge/PyPI_Attestation-None-red.svg`;
+
+    if (event.queryStringParameters?.style) {
+      shieldUrl += `?style=${event.queryStringParameters.style}`;
     }
-    
-    // Get any query parameters
-    const style = event.queryStringParameters?.style || '';
-    if (style) {
-      shieldUrl += `?style=${style}`;
-    }
-    
-    // Redirect to shields.io
+
     return {
       statusCode: 302,
       headers: {
-        Location: shieldUrl,
+        Location: shieldUrl
       },
       body: ''
     };
-  } catch (error) {
+  } catch (err) {
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Internal server error' })
+      body: JSON.stringify({ error: 'Internal error', details: err.message })
     };
   }
 };

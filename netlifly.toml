@@ -1,8 +1,17 @@
 [build]
   functions = "functions"
 
+[context.production]
+  branch = "main"  # This sets the production branch to main
+
+[[redirects]]
+  from = "/badge"
+  to = "/.netlify/functions/badge"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/badge/*"
-  to = "/.netlify/functions/badge"
+  to = "/.netlify/functions/badge/:splat"
   status = 200
   force = true
