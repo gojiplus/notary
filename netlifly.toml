@@ -5,7 +5,7 @@
   branch = "main"  # This sets the production branch to main
 
 [[redirects]]
-  from = "/badge/*"
-  to = "/.netlify/functions/badge/:splat"
+  from = "/badge"
+  to = "/.netlify/functions/badge"
   status = 200
   force = true
