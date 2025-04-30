@@ -9,3 +9,9 @@
   to = "/.netlify/functions/badge"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/badge/*"
+  to = "/.netlify/functions/badge/:splat"
+  status = 200
+  force = true
