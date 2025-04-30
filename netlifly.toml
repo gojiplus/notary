@@ -1,0 +1,8 @@
+[build]
+  functions = "functions"
+
+[[redirects]]
+  from = "/badge/*"
+  to = "/.netlify/functions/badge"
+  status = 200
+  force = true
