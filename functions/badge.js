@@ -2,9 +2,30 @@ const axios = require('axios');
 
 exports.handler = async (event, context) => {
   try {
-    // Parse path parameters
-    const path = event.path.replace('/badge/', '');
-    const [packageName, version, filename] = path.split('/');
+    console.log('Received event path:', event.path);
+    
+    // Parse path parameters - fixed to work with Netlify's path format
+    let pathSegments;
+    if (event.path.includes('/.netlify/functions/badge/')) {
+      pathSegments = event.path.split('/.netlify/functions/badge/')[1];
+    } else if (event.path.includes('/badge/')) {
+      // Handle direct access to /badge/ path
+      pathSegments = event.path.split('/badge/')[1];
+    } else {
+      // Fallback for direct function calls without the redirect
+      pathSegments = event.path.replace('/functions/badge/', '');
+    }
+    
+    if (!pathSegments) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: 'Invalid path format' })
+      };
+    }
+    
+    const [packageName, version, filename] = pathSegments.split('/');
+    
+    console.log('Parsed parameters:', { packageName, version, filename });
     
     if (!packageName || !version || !filename) {
       return {
@@ -38,6 +59,7 @@ exports.handler = async (event, context) => {
       }
     } catch (error) {
       // Assume no attestation if there's an error
+      console.log('Attestation error:', error.message);
       hasAttestation = false;
     }
     
@@ -56,6 +78,8 @@ exports.handler = async (event, context) => {
       shieldUrl += `?style=${style}`;
     }
     
+    console.log('Redirecting to:', shieldUrl);
+    
     // Redirect to shields.io
     return {
       statusCode: 302,
@@ -65,9 +89,10 @@ exports.handler = async (event, context) => {
       body: ''
     };
   } catch (error) {
+    console.error('Function error:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Internal server error' })
+      body: JSON.stringify({ error: 'Internal server error', details: error.message })
     };
   }
 };
