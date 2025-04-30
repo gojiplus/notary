@@ -1,0 +1,11 @@
+name = "notarypy-badge"
+main = "src/index.js"
+compatibility_date = "2025-04-30"
+
+# Configure routes if you're using a custom domain
+# routes = [
+#   { pattern = "badge.yourdomain.com", custom_domain = true }
+# ]
+
+# Specify the compatibility flags
+compatibility_flags = ["nodejs_compat"]

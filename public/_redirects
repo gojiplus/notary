@@ -1,8 +1,0 @@
-# Badge endpoint redirects
-/badge/*  /.netlify/functions/badge/:splat  200
-
-# Optional: Add a redirect for verification endpoint if you create one later
-# /verify/*  /.netlify/functions/verify/:splat  200
-
-# Optional: Redirect root to documentation or a landing page if you add one
-# /  /index.html  200
