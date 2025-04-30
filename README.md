@@ -1,6 +1,7 @@
 # Notary: PyPI Digital Attestation Shield Generation Service
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/c03f6271-f84f-4a64-af7b-1f878fdaa4ce/deploy-status)](https://app.netlify.com/sites/notarypy/deploys)
+App: https://notarypy.soodoku.workers.devb/badge/{python-library}/{version}/{file}
+Example: https://notarypy.soodoku.workers.devb/badge/pydantic/2.7.2/pydantic-2.7.2-py3-none-any.whl
 
 ## Securing the Python Package Supply Chain
 
