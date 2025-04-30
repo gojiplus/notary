@@ -1,0 +1,9 @@
+{
+  "name": "pypi-attestation-badge",
+  "version": "1.0.0",
+  "description": "Badge service for PyPI attestations",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "node-fetch": "^2.6.12"
+  }
+}
