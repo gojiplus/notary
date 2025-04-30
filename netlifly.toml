@@ -1,16 +1,10 @@
-[
-build
-]
+[build]
   functions = "functions"
 
-[
-context.production
-]
+[context.production]
   branch = "main"  # This sets the production branch to main
 
-[[
-redirects
-]]
+[[redirects]]
   from = "/badge/*"
   to = "/.netlify/functions/badge/:splat"
   status = 200
