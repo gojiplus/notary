@@ -1,6 +1,6 @@
 # Notary: PyPI Digital Attestation Shield Generation Service
 
-Example: https://notarypy.soodoku.workers.devb/badge/pydantic/2.7.2/pydantic-2.7.2-py3-none-any.whl
+Example: https://notarypy.soodoku.workers.dev/badge/pydantic/2.7.2/pydantic-2.7.2-py3-none-any.whl
 
 Uses the [PyPI Integrity API](https://docs.pypi.org/api/integrity/), e.g., https://pypi.org/integrity/ethnicolr/0.13.0/ethnicolr-0.13.0-py3-none-any.whl/provenance, and produces a Shields Badge based on that.
 
